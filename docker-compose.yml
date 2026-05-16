@@ -1,0 +1,163 @@
+# Default env settings are loaded from .env (development).
+# For production, copy .env.prod to .env or start with --env-file .env.prod.
+services:
+  db-service:
+    image: postgres:17-alpine
+    container_name: dit_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app_network
+
+  django-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: dit_django
+    env_file:
+      - .env
+    depends_on:
+      db-service:
+        condition: service_healthy
+    volumes:
+      - ./bibliotheque:/app/bibliotheque:delegated
+      - static_data:/app/bibliotheque/staticfiles
+      - media_data:/app/bibliotheque/media
+      - logs_data:/app/logs
+    ports:
+      - "8000:8000"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/')\""]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app_network
+
+  reco-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.reco
+    container_name: dit_reco_api
+    env_file:
+      - .env
+    depends_on:
+      db-service:
+        condition: service_healthy
+    volumes:
+      - ml_artifacts:/app/artifacts
+      - logs_data:/app/logs
+      - ./ml_service:/app
+    ports:
+      - "8001:8001"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/docs')\""]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app_network
+
+  ml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.ml
+    container_name: dit_ml_service
+    env_file:
+      - .env
+    depends_on:
+      db-service:
+        condition: service_healthy
+    volumes:
+      - ml_artifacts:/app/artifacts
+      - logs_data:/app/logs
+      - ./ml_service:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "test -d /app/artifacts || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: dit_frontend
+    depends_on:
+      django-backend:
+        condition: service_started
+    volumes:
+      - static_data:/usr/share/nginx/html/static:ro
+      - media_data:/usr/share/nginx/html/media:ro
+    ports:
+      - "3000:3000"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3000/ >/dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+    external: true
+    name: bibliotheque_postgres_data
+  static_data:
+    name: dit_static_data
+  media_data:
+    name: dit_media_data
+  ml_artifacts:
+    name: dit_ml_artifacts
+  logs_data:
+    name: dit_logs_data
+
+networks:
+  app_network:
+    driver: bridge

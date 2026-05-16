@@ -1,0 +1,128 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.python-eggs/
+*.egg-info/
+dist/
+build/
+.eggs/
+pyvenv.cfg
+venv/
+ENV/
+env/
+.venv/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+*.pot
+*.pyc
+
+# Docker
+docker-compose.override.yml
+**/docker-compose.override.yml
+*.env
+.env.*
+*.dockerignore
+docker-compose.*.yml
+Dockerfile.*
+
+# ML / data / models
+*.h5
+*.keras
+*.ckpt
+*.pt
+*.pth
+*.joblib
+*.pkl
+*.sav
+*.npz
+*.npy
+*.csv
+*.tsv
+*.jsonl
+*.parquet
+*.hdf5
+*.db
+*.sqlite
+data/
+datasets/
+artifacts/
+models/
+checkpoints/
+outputs/
+logs/
+results/
+
+# DVC
+.dvc/
+*.dvc
+.dvcignore
+
+# VS Code
+.vscode/
+.history/
+
+# System / temporary
+Thumbs.db
+desktop.ini
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*.log
+
+# Windows
+*.lnk
+
+# Ignore local secret files
+.env
+.env.local
+.env.dev
+.env.prod
+.env.*
+
+# Ignore virtual environments
+env/
+ENV/
+venv/
+.venv/
+
+# Ignore Python packaging artifacts
+pip-wheel-metadata/
+*.egg
+
+# Ignore PyCharm
+.idea/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# Ignore node_modules if frontend uses Node
+node_modules/
+
+# Ignore compiled files
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Ignore generated static files if built separately
+staticfiles/
+
+# Optional: keep DVC remote config local
+.dvc/config.local

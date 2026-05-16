@@ -1,0 +1,99 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Emprunts – Admin DIT Library{% endblock %}
+{% block page_title %}Gestion des emprunts{% endblock %}
+
+{% block content %}
+<div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+  <div class="stat-card"><div class="stat-value">{{ counts.all }}</div><span class="stat-label">Total</span></div>
+  <div class="stat-card"><div class="stat-value">{{ counts.active }}</div><span class="stat-label">En cours</span></div>
+  <div class="stat-card"><div class="stat-value">{{ counts.overdue }}</div><span class="stat-label">En retard</span></div>
+  <div class="stat-card"><div class="stat-value">{{ counts.returned }}</div><span class="stat-label">Retournes</span></div>
+</div>
+
+<div class="panel">
+  <div class="panel-head">
+    <h2>Tous les emprunts</h2>
+    <form class="filters" method="get">
+      <input type="search" name="search" value="{{ search_query }}" placeholder="Livre, utilisateur, email...">
+      <select name="status">
+        <option value="">Tous statuts</option>
+        <option value="active" {% if filter_status == 'active' %}selected{% endif %}>En cours</option>
+        <option value="renewed" {% if filter_status == 'renewed' %}selected{% endif %}>Renouvele</option>
+        <option value="overdue" {% if filter_status == 'overdue' %}selected{% endif %}>En retard</option>
+        <option value="returned" {% if filter_status == 'returned' %}selected{% endif %}>Retourne</option>
+      </select>
+      <select name="role">
+        <option value="">Tous roles</option>
+        <option value="student" {% if filter_role == 'student' %}selected{% endif %}>Etudiants</option>
+        <option value="teacher" {% if filter_role == 'teacher' %}selected{% endif %}>Professeurs</option>
+        <option value="staff" {% if filter_role == 'staff' %}selected{% endif %}>Personnel</option>
+        <option value="admin" {% if filter_role == 'admin' %}selected{% endif %}>Administrateurs</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+        <input type="checkbox" name="overdue" value="1" {% if overdue_only %}checked{% endif %}> Retards uniquement
+      </label>
+      <button type="submit" class="btn btn-primary">Filtrer</button>
+      <a href="{% url 'admin_loans' %}" class="btn btn-outline">Reinitialiser</a>
+    </form>
+  </div>
+
+  {% if loans %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Role</th>
+        <th>Livre</th>
+        <th>Categorie</th>
+        <th>Emprunt</th>
+        <th>Retour prevu</th>
+        <th>Statut</th>
+        <th>Renouv.</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for loan in loans %}
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="user-avatar">{{ loan.user.initials }}</div>
+            <div>
+              <strong>{{ loan.user.full_name }}</strong><br>
+              <small style="color:var(--text-muted)">{{ loan.user.email }}</small>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-{{ loan.user.role }}">{{ loan.user.get_role_display }}</span></td>
+        <td>
+          <strong>{{ loan.book.title }}</strong><br>
+          <small style="color:var(--text-muted)">{{ loan.book.author }}</small>
+        </td>
+        <td>{{ loan.book.category.name|default:"—" }}</td>
+        <td>{{ loan.borrowed_at|date:"d/m/Y" }}</td>
+        <td>
+          {{ loan.due_date|date:"d/m/Y" }}
+          {% if loan.is_overdue %}<br><small style="color:var(--err);font-weight:600">+{{ loan.days_overdue }}j retard</small>{% endif %}
+        </td>
+        <td><span class="badge badge-{{ loan.status }}">{{ loan.get_status_display }}</span></td>
+        <td>{{ loan.renewal_count }}/2</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if page_obj.has_other_pages %}
+  <div style="padding:16px 22px;display:flex;gap:8px;justify-content:center">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ filter_status }}&role={{ filter_role }}{% if overdue_only %}&overdue=1{% endif %}" class="btn btn-outline btn-sm">Precedent</a>
+    {% endif %}
+    <span style="padding:8px 12px;font-size:13px">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ filter_status }}&role={{ filter_role }}{% if overdue_only %}&overdue=1{% endif %}" class="btn btn-outline btn-sm">Suivant</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% else %}
+  <p class="empty">Aucun emprunt ne correspond aux filtres.</p>
+  {% endif %}
+</div>
+{% endblock %}

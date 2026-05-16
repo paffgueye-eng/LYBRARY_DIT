@@ -1,0 +1,31 @@
+{% extends "base_app.html" %}
+{% block title %}Recommandations – DIT Library{% endblock %}
+{% block page_title %}Recommandations IA{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Recommandé pour vous</h1>
+  <p style="opacity:.9;font-size:14px">Basé sur votre historique, vos catégories préférées et la popularité des ouvrages.</p>
+</div>
+
+{% if recommendations %}
+<div class="books-grid">
+  {% for book, score, reason in recommendations %}
+  <a href="{% url 'book_detail' book.id %}" class="book-card-ui">
+    {% include "includes/book_cover.html" with book=book size="md" %}
+    <div class="book-card-ui-body">
+      <span class="match-pill">{{ score }}% match</span>
+      <h3>{{ book.title|truncatechars:40 }}</h3>
+      <p>{{ book.author }}</p>
+      <span class="rec-reason">{{ reason }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-card">
+  <p>Aucune recommandation pour le moment.</p>
+  <a href="{% url 'book_list' %}" class="btn btn-primary">Parcourir le catalogue</a>
+</div>
+{% endif %}
+{% endblock %}

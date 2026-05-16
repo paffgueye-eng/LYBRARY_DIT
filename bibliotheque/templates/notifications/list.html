@@ -1,0 +1,47 @@
+{% extends "base_app.html" %}
+{% block title %}Notifications – DIT Library{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="notif-header">
+  <p class="notif-summary">
+    {% if unread_count %}
+    <strong>{{ unread_count }}</strong> notification{{ unread_count|pluralize }} non lue{{ unread_count|pluralize }}
+    {% else %}
+    Toutes vos notifications sont à jour.
+    {% endif %}
+  </p>
+  {% if unread_count %}
+  <a href="{% url 'mark_all_notifications_read' %}" class="btn btn-outline btn-sm">Tout marquer comme lu</a>
+  {% endif %}
+</div>
+
+{% if notifications %}
+<div class="history-list notif-list">
+  {% for n in notifications %}
+  <a href="{% url 'mark_notification_read' n.pk %}" class="history-item {% if not n.is_read %}notif-unread{% endif %}">
+    <div class="notif-icon notif-type-{{ n.type }}">
+      {% if n.type == 'loan_overdue' %}⚠️
+      {% elif n.type == 'loan_reminder' %}📅
+      {% elif n.type == 'recommendation' %}✨
+      {% elif n.type == 'reservation' %}🔖
+      {% elif n.type == 'account' %}👤
+      {% else %}🔔{% endif %}
+    </div>
+    <div class="notif-body">
+      <strong>{{ n.title }}</strong>
+      <p>{{ n.message }}</p>
+      <span class="notif-date">{{ n.created_at|date:"d/m/Y à H:i" }}</span>
+    </div>
+    {% if not n.is_read %}<span class="badge badge-active">Nouveau</span>{% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-card">
+  <p style="font-size:15px;margin-bottom:8px">Aucune notification pour le moment.</p>
+  <p style="font-size:13px;color:var(--text-m)">Vous serez informé des retours de livres, rappels et recommandations ici.</p>
+  <a href="{% url 'book_list' %}" class="btn btn-primary" style="margin-top:16px">Parcourir le catalogue</a>
+</div>
+{% endif %}
+{% endblock %}

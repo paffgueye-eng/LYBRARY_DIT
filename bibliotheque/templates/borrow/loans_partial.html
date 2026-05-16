@@ -1,0 +1,43 @@
+{% if overdue_count %}
+<div class="overdue-banner">
+  <strong>{{ overdue_count }} livre{{ overdue_count|pluralize }} en retard.</strong> Veuillez les retourner dès que possible.
+</div>
+{% endif %}
+
+<div class="stats-row-home" style="margin-bottom:22px">
+  <article class="stat-pill"><span class="stat-pill-value">{{ active_count }}</span><span class="stat-pill-label">En cours</span></article>
+  <article class="stat-pill"><span class="stat-pill-value">{{ renewed_count }}</span><span class="stat-pill-label">Renouvelés</span></article>
+  <article class="stat-pill {% if overdue_count %}stat-pill-warn{% endif %}"><span class="stat-pill-value">{{ overdue_count }}</span><span class="stat-pill-label">En retard</span></article>
+  <article class="stat-pill"><span class="stat-pill-value">{{ returned_count }}</span><span class="stat-pill-label">Retournés (mois)</span></article>
+</div>
+
+{% if active_loans %}
+<div class="loan-cards-grid">
+  {% for loan in active_loans %}
+  <article class="loan-card-ui">
+    {% include "includes/book_cover.html" with book=loan.book size="sm" %}
+    <div class="loan-card-ui-body">
+      <h3>{{ loan.book.title }}</h3>
+      <p>{{ loan.book.author }}</p>
+      <div class="loan-meta">
+        <span><strong>Emprunté</strong> {{ loan.borrowed_at|date:"d/m/Y" }}</span>
+        <span><strong>Retour</strong> {{ loan.due_date|date:"d/m/Y" }}</span>
+        <span class="badge badge-{{ loan.status }}">{{ loan.get_status_display }}</span>
+      </div>
+      <div class="book-actions" style="margin-top:12px">
+        {% if loan.renewal_count < 2 and not loan.is_overdue %}
+        <a href="{% url 'renew_loan' loan.id %}" class="btn btn-outline btn-sm">Renouveler</a>
+        {% endif %}
+        <a href="{% url 'return_book' loan.id %}" class="btn btn-primary btn-sm">Retourner</a>
+        <a href="{% url 'book_detail' loan.book.id %}" class="btn btn-outline btn-sm">Détail</a>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-card">
+  <p>Aucun emprunt en cours.</p>
+  <a href="{% url 'book_list' %}" class="btn btn-primary">Parcourir le catalogue</a>
+</div>
+{% endif %}

@@ -1,0 +1,79 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Catalogue – Admin DIT Library{% endblock %}
+{% block page_title %}Gestion du catalogue{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>Tous les livres</h2>
+    <form class="filters" method="get">
+      <input type="search" name="search" value="{{ search_query }}" placeholder="Titre, auteur, ISBN...">
+      <select name="category">
+        <option value="">Toutes categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+      <select name="availability">
+        <option value="">Disponibilite</option>
+        <option value="available" {% if filter_availability == 'available' %}selected{% endif %}>Disponibles</option>
+        <option value="unavailable" {% if filter_availability == 'unavailable' %}selected{% endif %}>Indisponibles</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filtrer</button>
+      <a href="{% url 'admin_catalog' %}" class="btn btn-outline">Reinitialiser</a>
+      <a href="/admin/books/book/add/" target="_blank" class="btn btn-primary">+ Ajouter un livre</a>
+    </form>
+  </div>
+
+  {% if books %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Auteur</th>
+        <th>Categorie</th>
+        <th>ISBN</th>
+        <th>Exemplaires</th>
+        <th>Emprunts actifs</th>
+        <th>Total emprunts</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for book in books %}
+      <tr>
+        <td><strong>{{ book.title }}</strong></td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.category.name|default:"—" }}</td>
+        <td><small>{{ book.isbn }}</small></td>
+        <td>
+          <span class="badge {% if book.available_copies > 0 %}badge-active{% else %}badge-overdue{% endif %}">
+            {{ book.available_copies }} / {{ book.total_copies }}
+          </span>
+        </td>
+        <td>{{ book.active_loan_count }}</td>
+        <td>{{ book.loan_count }}</td>
+        <td>
+          <a href="/admin/books/book/{{ book.id }}/change/" target="_blank" class="btn btn-outline btn-sm">Modifier</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if page_obj.has_other_pages %}
+  <div style="padding:16px 22px;display:flex;gap:8px;justify-content:center">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&category={{ selected_category }}&availability={{ filter_availability }}" class="btn btn-outline btn-sm">Precedent</a>
+    {% endif %}
+    <span style="padding:8px 12px;font-size:13px">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&category={{ selected_category }}&availability={{ filter_availability }}" class="btn btn-outline btn-sm">Suivant</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% else %}
+  <p class="empty">Aucun livre trouve.</p>
+  {% endif %}
+</div>
+{% endblock %}

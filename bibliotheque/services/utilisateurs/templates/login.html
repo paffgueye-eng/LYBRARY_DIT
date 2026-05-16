@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIT Library – Connexion</title>
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body class="auth-page">
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <form method="post" action="{% url 'login' %}" id="loginForm">
+      {% csrf_token %}
+
+      <div class="logo-block">
+        <div class="logo-mark" aria-hidden="true">
+          <svg width="44" height="26" viewBox="0 0 48 26" fill="none">
+            <circle cx="6" cy="18" r="4" fill="#f5a623"/>
+            <circle cx="18" cy="8" r="4" fill="#5DCAA5"/>
+            <circle cx="32" cy="14" r="4" fill="#29b6f6"/>
+            <circle cx="46" cy="5" r="4" fill="#e040a8"/>
+            <polyline points="6,18 18,8 32,14 46,5" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none"/>
+          </svg>
+        </div>
+        <div class="logo-title">DIT</div>
+        <div class="logo-sub">Bibliothèque numérique · Dakar Institute of Technology</div>
+      </div>
+
+      <h1>Connexion</h1>
+      <p class="subtext">Connectez-vous avec votre adresse e-mail institutionnelle.</p>
+
+      {% if error_message %}
+      <div class="alert" role="alert">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>{{ error_message }}</span>
+      </div>
+      {% endif %}
+
+      <div class="field">
+        <label for="email">Adresse e-mail</label>
+        <div class="input-wrap">
+          <span class="input-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" stroke="none"/><path d="M4 8l8 5 8-5"/></svg>
+          </span>
+          <input type="email" id="email" name="email" placeholder="vous@dit.sn" autocomplete="email"
+            value="{% if request.POST.email %}{{ request.POST.email }}{% endif %}" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <div class="input-wrap">
+          <span class="input-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 118 0v3"/></svg>
+          </span>
+          <input type="password" id="password" name="password" placeholder="••••••••"
+            autocomplete="current-password" style="padding-right:42px" required>
+          <button class="pw-toggle" type="button" aria-label="Afficher le mot de passe" data-state="hidden">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="row-between">
+        <label class="check-label">
+          <input type="checkbox" id="remember" name="remember">
+          Mémoriser mon e-mail
+        </label>
+        <a href="#" class="forgot">Mot de passe oublié ?</a>
+      </div>
+      <p class="switch-account">
+        <a href="{% url 'logout' %}">Changer de compte</a>
+        ·
+        <a href="#" id="clearSavedEmail">Effacer l'e-mail enregistré</a>
+      </p>
+
+      <button class="btn-submit" type="submit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+        Se connecter
+      </button>
+
+      {% if debug %}
+      <div class="demo-hint">
+        Démo : <strong>aminata.diop@dit.sn</strong> ou <strong>admin@dit.sn</strong> — <strong>Dit2026!</strong>
+      </div>
+      {% endif %}
+
+      <a href="{% url 'index' %}" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour à l'accueil
+      </a>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'js/auth.js' %}" defer></script>
+</body>
+</html>

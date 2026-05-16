@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Administration – DIT Library{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-shell">
+  {% include "components/sidebar_admin.html" %}
+  <div class="main">
+    <header class="topbar">
+      <h1>{% block page_title %}Administration{% endblock %}</h1>
+      {% include "components/user_menu.html" %}
+    </header>
+    {% include "components/messages.html" %}
+    <main class="content">{% block content %}{% endblock %}</main>
+  </div>
+  <script>
+  (function () {
+    const menu = document.getElementById("userMenu");
+    const btn = document.getElementById("userMenuBtn");
+    const panel = document.getElementById("userMenuDropdown");
+    if (!menu || !btn || !panel) return;
+
+    function closeMenu() {
+      panel.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+      menu.classList.remove("is-open");
+    }
+
+    function openMenu() {
+      panel.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      menu.classList.add("is-open");
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (panel.hidden) openMenu();
+      else closeMenu();
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target)) closeMenu();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeMenu();
+    });
+  })();
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

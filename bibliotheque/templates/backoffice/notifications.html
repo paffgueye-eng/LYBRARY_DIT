@@ -1,0 +1,46 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Notifications – Admin DIT Library{% endblock %}
+{% block page_title %}Notifications plateforme{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>Toutes les notifications</h2>
+    <form class="filters" method="get">
+      <select name="type">
+        <option value="">Tous types</option>
+        <option value="loan_reminder" {% if filter_type == 'loan_reminder' %}selected{% endif %}>Rappel retour</option>
+        <option value="loan_overdue" {% if filter_type == 'loan_overdue' %}selected{% endif %}>Retard</option>
+        <option value="recommendation" {% if filter_type == 'recommendation' %}selected{% endif %}>Recommandation</option>
+        <option value="reservation" {% if filter_type == 'reservation' %}selected{% endif %}>Reservation</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+        <input type="checkbox" name="unread" value="1" {% if unread_only %}checked{% endif %}> Non lues
+      </label>
+      <button type="submit" class="btn btn-primary">Filtrer</button>
+    </form>
+  </div>
+
+  {% if notifications %}
+  <table class="data-table">
+    <thead>
+      <tr><th>Utilisateur</th><th>Type</th><th>Titre</th><th>Message</th><th>Date</th><th>Lu</th></tr>
+    </thead>
+    <tbody>
+      {% for n in notifications %}
+      <tr>
+        <td>{{ n.user.full_name }}<br><small>{{ n.user.email }}</small></td>
+        <td><span class="badge badge-{{ n.type }}">{{ n.get_type_display }}</span></td>
+        <td><strong>{{ n.title }}</strong></td>
+        <td style="max-width:240px">{{ n.message|truncatewords:12 }}</td>
+        <td>{{ n.created_at|date:"d/m/Y H:i" }}</td>
+        <td>{% if n.is_read %}Oui{% else %}<span class="badge badge-overdue">Non</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Aucune notification.</p>
+  {% endif %}
+</div>
+{% endblock %}

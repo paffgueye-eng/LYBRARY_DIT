@@ -1,0 +1,31 @@
+{% extends "base_app.html" %}
+{% block title %}Mes Emprunts – DIT Library{% endblock %}
+{% block page_title %}Mes Emprunts{% endblock %}
+
+{% block content %}
+<form method="get" class="catalog-filters">
+  <input type="search" name="search" value="{{ search_query }}" placeholder="Rechercher un livre…" class="input-search">
+  <button type="submit" class="btn btn-primary">Rechercher</button>
+</form>
+
+{% include "borrow/loans_partial.html" %}
+
+{% if recent_loans %}
+<section class="section-block">
+  <div class="section-head">
+    <h2>Historique récent</h2>
+  </div>
+  <div class="history-list">
+    {% for loan in recent_loans %}
+    <a href="{% url 'book_detail' loan.book.id %}" class="history-item">
+      {% include "includes/book_cover.html" with book=loan.book size="xs" %}
+      <div>
+        <strong>{{ loan.book.title }}</strong>
+        <span>Retourné le {{ loan.returned_at|date:"d/m/Y" }} — {{ loan.book.author }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

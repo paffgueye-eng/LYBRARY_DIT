@@ -1,0 +1,10 @@
+<div class="book-cover {% if size %}{{ size }}{% else %}md{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}">
+  {% if book.cover %}
+  <img src="{{ book.cover.url }}" alt="Couverture — {{ book.title }}" loading="lazy">
+  {% else %}
+  <div class="cover-fallback cat-{{ book.category.slug|default:'general' }}">
+    <span class="cover-fallback-title">{{ book.title|truncatechars:42 }}</span>
+    <span class="cover-fallback-author">{{ book.author }}</span>
+  </div>
+  {% endif %}
+</div>

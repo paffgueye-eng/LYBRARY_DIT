@@ -1,0 +1,137 @@
+{% extends "base_app.html" %}
+{% block title %}Accueil – DIT Library{% endblock %}
+{% block page_title %}Accueil{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+{% endblock %}
+
+{% block content %}
+<section class="welcome-hero">
+  <div>
+    <p class="welcome-kicker">Bibliothèque numérique DIT</p>
+    <h1>Bonjour, {{ user_name }}</h1>
+    <p class="welcome-lead">
+      Découvrez votre prochaine lecture
+      {% if user_department %}<span>— filière {{ user_department }}</span>{% endif %}
+    </p>
+  </div>
+  <a href="{% url 'book_list' %}" class="btn btn-primary">Explorer le catalogue</a>
+</section>
+
+<div class="stats-row-home">
+  <article class="stat-pill">
+    <span class="stat-pill-value">{{ active_loans_count }}</span>
+    <span class="stat-pill-label">Emprunts en cours</span>
+  </article>
+  <article class="stat-pill">
+    <span class="stat-pill-value">{{ total_loans }}</span>
+    <span class="stat-pill-label">Livres empruntés</span>
+  </article>
+  <article class="stat-pill">
+    <span class="stat-pill-value">{{ unread_notifications_count }}</span>
+    <span class="stat-pill-label">Notifications</span>
+  </article>
+  <article class="stat-pill {% if overdue_count %}stat-pill-warn{% endif %}">
+    <span class="stat-pill-value">{{ overdue_count }}</span>
+    <span class="stat-pill-label">En retard</span>
+  </article>
+</div>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Dernières acquisitions</h2>
+    <a href="{% url 'book_list' %}" class="link-more">Voir tout le catalogue →</a>
+  </div>
+  <div class="books-scroll">
+    {% for book in latest_books %}
+    <a href="{% url 'book_detail' book.id %}" class="book-tile">
+      {% include "includes/book_cover.html" with book=book size="lg" %}
+      <div class="book-tile-body">
+        <h3>{{ book.title|truncatechars:40 }}</h3>
+        <p>{{ book.author }}</p>
+        {% if book.category %}<span class="tag tag-{{ book.category.slug }}">{{ book.category.name }}</span>{% endif %}
+      </div>
+    </a>
+    {% empty %}
+    <p class="empty-msg">Aucun livre dans le catalogue pour le moment.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Mes emprunts actuels</h2>
+    <a href="{% url 'my_loans' %}" class="link-more">Tous mes emprunts →</a>
+  </div>
+  {% if active_loans %}
+  <div class="loan-cards-grid">
+    {% for loan in active_loans %}
+    <article class="loan-card-ui">
+      {% include "includes/book_cover.html" with book=loan.book size="sm" %}
+      <div class="loan-card-ui-body">
+        <h3>{{ loan.book.title }}</h3>
+        <p>{{ loan.book.author }}</p>
+        <div class="loan-meta">
+          <span><strong>Retour</strong> {{ loan.due_date|date:"d/m/Y" }}</span>
+          <span class="badge badge-{{ loan.status }}">{{ loan.get_status_display }}</span>
+        </div>
+        <a href="{% url 'book_detail' loan.book.id %}" class="btn btn-outline btn-sm">Voir le livre</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-card">
+    <p>Aucun emprunt en cours.</p>
+    <a href="{% url 'book_list' %}" class="btn btn-primary">Emprunter un livre</a>
+  </div>
+  {% endif %}
+</section>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Recommandations pour vous</h2>
+    <a href="{% url 'recommendations' %}" class="link-more">Toutes les recommandations →</a>
+  </div>
+  {% if recommendations %}
+  <div class="books-grid">
+    {% for book, score, reason in recommendations %}
+    <a href="{% url 'book_detail' book.id %}" class="book-card-ui">
+      {% include "includes/book_cover.html" with book=book size="md" %}
+      <div class="book-card-ui-body">
+        <span class="match-pill">{{ score }}% match</span>
+        <h3>{{ book.title|truncatechars:36 }}</h3>
+        <p>{{ book.author }}</p>
+        <span class="rec-reason">{{ reason }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-card">
+    <p>Empruntez des livres pour recevoir des suggestions personnalisées.</p>
+  </div>
+  {% endif %}
+</section>
+
+{% if recent_loans %}
+<section class="section-block" id="historique">
+  <div class="section-head">
+    <h2>Historique récent</h2>
+    <a href="{% url 'my_loans' %}" class="link-more">Voir l'historique →</a>
+  </div>
+  <div class="history-list">
+    {% for loan in recent_loans %}
+    <a href="{% url 'book_detail' loan.book.id %}" class="history-item">
+      {% include "includes/book_cover.html" with book=loan.book size="xs" %}
+      <div>
+        <strong>{{ loan.book.title }}</strong>
+        <span>Retourné le {{ loan.returned_at|date:"d/m/Y" }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

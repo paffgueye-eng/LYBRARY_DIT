@@ -1,0 +1,112 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Utilisateurs – Admin DIT Library{% endblock %}
+{% block page_title %}Gestion des utilisateurs{% endblock %}
+
+{% block content %}
+<div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
+  <div class="stat-card"><div class="stat-value">{{ role_counts.all }}</div><span class="stat-label">Total</span></div>
+  <div class="stat-card"><div class="stat-value">{{ role_counts.student }}</div><span class="stat-label">Etudiants</span></div>
+  <div class="stat-card"><div class="stat-value">{{ role_counts.teacher }}</div><span class="stat-label">Professeurs</span></div>
+  <div class="stat-card"><div class="stat-value">{{ role_counts.staff }}</div><span class="stat-label">Personnel</span></div>
+  <div class="stat-card"><div class="stat-value">{{ role_counts.admin }}</div><span class="stat-label">Admins</span></div>
+</div>
+
+<div class="panel">
+  <div class="panel-head">
+    <h2>Liste des utilisateurs</h2>
+    <form class="filters" method="get">
+      <input type="search" name="search" value="{{ search_query }}" placeholder="Nom, email, n. etudiant...">
+      <select name="role">
+        <option value="">Tous roles</option>
+        <option value="student" {% if filter_role == 'student' %}selected{% endif %}>Etudiants</option>
+        <option value="teacher" {% if filter_role == 'teacher' %}selected{% endif %}>Professeurs</option>
+        <option value="staff" {% if filter_role == 'staff' %}selected{% endif %}>Personnel</option>
+        <option value="admin" {% if filter_role == 'admin' %}selected{% endif %}>Administrateurs</option>
+      </select>
+      <select name="active">
+        <option value="">Actif / Inactif</option>
+        <option value="1" {% if filter_active == '1' %}selected{% endif %}>Actifs</option>
+        <option value="0" {% if filter_active == '0' %}selected{% endif %}>Inactifs</option>
+      </select>
+      <select name="department">
+        <option value="">Tous departements</option>
+        {% for dept in departments %}
+        <option value="{{ dept }}" {% if filter_department == dept %}selected{% endif %}>{{ dept }}</option>
+        {% endfor %}
+      </select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+        <input type="checkbox" name="has_loans" value="1" {% if filter_has_loans == '1' %}checked{% endif %}> Avec emprunts actifs
+      </label>
+      <button type="submit" class="btn btn-primary">Filtrer</button>
+      <a href="{% url 'admin_users' %}" class="btn btn-outline">Reinitialiser</a>
+    </form>
+  </div>
+
+  {% if users %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Role</th>
+        <th>Departement</th>
+        <th>N. etudiant</th>
+        <th>Emprunts total</th>
+        <th>En cours</th>
+        <th>Statut compte</th>
+        <th>Inscription</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="user-avatar">{{ u.initials }}</div>
+            <div>
+              <strong>{{ u.full_name }}</strong><br>
+              <small style="color:var(--text-muted)">{{ u.email }}</small>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-{{ u.role }}">{{ u.get_role_display }}</span></td>
+        <td>{{ u.department|default:"—" }}</td>
+        <td>{{ u.student_id|default:"—" }}</td>
+        <td>{{ u.loan_count }}</td>
+        <td>
+          {% if u.active_loan_count %}
+          <span class="badge badge-active">{{ u.active_loan_count }} actif{{ u.active_loan_count|pluralize }}</span>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if u.is_active %}
+          <span class="badge badge-active">Actif</span>
+          {% else %}
+          <span class="badge badge-returned">Inactif</span>
+          {% endif %}
+        </td>
+        <td>{{ u.date_joined|date:"d/m/Y" }}</td>
+        <td>
+          <a href="{% url 'admin_loans' %}?search={{ u.email }}" class="btn btn-outline btn-sm">Emprunts</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if page_obj.has_other_pages %}
+  <div style="padding:16px 22px;display:flex;gap:8px;justify-content:center">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&role={{ filter_role }}&active={{ filter_active }}&department={{ filter_department }}{% if filter_has_loans %}&has_loans=1{% endif %}" class="btn btn-outline btn-sm">Precedent</a>
+    {% endif %}
+    <span style="padding:8px 12px;font-size:13px">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&role={{ filter_role }}&active={{ filter_active }}&department={{ filter_department }}{% if filter_has_loans %}&has_loans=1{% endif %}" class="btn btn-outline btn-sm">Suivant</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% else %}
+  <p class="empty">Aucun utilisateur ne correspond aux filtres.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "backoffice/base.html" %}
+{% block title %}Recommandations – Admin DIT Library{% endblock %}
+{% block page_title %}Recommandations IA – Administration{% endblock %}
+
+{% block content %}
+<p style="color:var(--text-muted);margin-bottom:20px;font-size:14px">
+  Vue de supervision du moteur de recommandations. Les suggestions personnalisees restent accessibles aux etudiants via leur espace.
+</p>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h2>Livres les plus empruntes</h2></div>
+    <table class="data-table">
+      <thead><tr><th>Titre</th><th>Auteur</th><th>Emprunts</th></tr></thead>
+      <tbody>
+        {% for book in top_books %}
+        <tr>
+          <td><strong>{{ book.title }}</strong></td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.loan_count }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="empty">Aucune donnee</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Categories du catalogue</h2></div>
+    <table class="data-table">
+      <thead><tr><th>Categorie</th><th>Livres</th></tr></thead>
+      <tbody>
+        {% for cat in categories %}
+        <tr>
+          <td>{{ cat.name }}</td>
+          <td>{{ cat.book_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if sample_recommendations %}
+<div class="panel" style="margin-top:20px">
+  <div class="panel-head">
+    <h2>Apercu des recommandations par etudiant (echantillon)</h2>
+  </div>
+  <div style="padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+    {% for sample in sample_recommendations %}
+    <div style="background:var(--teal-light);border-radius:12px;padding:16px;border:1px solid var(--border)">
+      <div style="font-weight:600;margin-bottom:10px">{{ sample.user.full_name }}</div>
+      <small style="color:var(--text-muted)">{{ sample.user.email }}</small>
+      <ul style="margin-top:12px;padding-left:18px;font-size:13px">
+        {% for book, score, reason in sample.recommendations %}
+        <li style="margin-bottom:6px"><strong>{{ book.title }}</strong> ({{ score }}%) – {{ reason }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
