@@ -14,23 +14,21 @@ API FastAPI de recommandation de livres basée sur **TF-IDF** et **similarité c
 ```
 ml_service/
 ├── app/
-│   ├── main.py           # Point d'entrée FastAPI
-│   ├── config.py         # Settings (pydantic-settings)
-│   ├── database.py       # Session SQLAlchemy
-│   ├── models_db.py      # Tables Django (users, books, loans)
-│   ├── schemas.py        # Modèles Pydantic
-│   ├── api/routes.py     # Endpoints REST
-│   ├── core/             # Cache, sécurité, logs, exceptions
-│   └── ml/
-│       ├── train.py      # Entraînement + sauvegarde joblib
-│       ├── predict.py    # Prédictions
-│       ├── retrain.py    # Ré-entraînement
-│       └── services.py   # load_model, recommend_books, train_model
-├── artifacts/
-│   ├── vectorizer.pkl
-│   ├── dataframe.pkl
-│   └── model.pkl
-├── requirements.txt
+│   ├── api         
+│   ├── core       
+│   ├── ml/
+        ├── main.py 
+        ├── train.py
+        ├── predict.py
+        ├── retrain.py
+        └── services.py      
+│   ├── init.py      
+│   ├── config.py       
+│   ├── database.py     
+│   ├── main.py
+    ├── shemas.py           
+│   └── models_db.py
+
 └── .env
 ```
 
