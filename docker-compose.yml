@@ -117,6 +117,23 @@ services:
     networks:
       - app_network
 
+  dvc-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.dvc
+    container_name: dit_dvc_runner
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      db-service:
+        condition: service_healthy
+    command: ["sleep", "infinity"]
+    networks:
+      - app_network
+
   frontend:
     build:
       context: .

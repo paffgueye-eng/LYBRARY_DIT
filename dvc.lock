@@ -1,0 +1,94 @@
+schema: '2.0'
+stages:
+  export:
+    cmd: python scripts/export_loans.py --output data/raw/loans.csv
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 898d9298e46dc571960559b879e29629
+      size: 398
+      isexec: true
+    - path: scripts/export_loans.py
+      hash: md5
+      md5: eb5bb32e0fd6d278cbb3ef0bc002e533
+      size: 2883
+      isexec: true
+    outs:
+    - path: data/raw/loans.csv
+      hash: md5
+      md5: c0d2a7066b29e5f3570ae541e5b70dae
+      size: 903
+  preprocess:
+    cmd: python scripts/preprocess.py --input data/raw/loans.csv --output 
+      data/processed/loans_clean.csv --params params.yaml
+    deps:
+    - path: data/raw/loans.csv
+      hash: md5
+      md5: c0d2a7066b29e5f3570ae541e5b70dae
+      size: 903
+    - path: params.yaml
+      hash: md5
+      md5: 898d9298e46dc571960559b879e29629
+      size: 398
+      isexec: true
+    - path: scripts/preprocess.py
+      hash: md5
+      md5: 19f7df0613ed2bea544240665667be79
+      size: 3656
+      isexec: true
+    outs:
+    - path: data/processed/loans_clean.csv
+      hash: md5
+      md5: 0b59f33c4d34dce1f7a0bc058301e585
+      size: 974
+  train:
+    cmd: python scripts/train.py --input data/processed/loans_clean.csv --output
+      models/model.pkl --params params.yaml
+    deps:
+    - path: data/processed/loans_clean.csv
+      hash: md5
+      md5: 0b59f33c4d34dce1f7a0bc058301e585
+      size: 974
+    - path: params.yaml
+      hash: md5
+      md5: 898d9298e46dc571960559b879e29629
+      size: 398
+      isexec: true
+    - path: scripts/train.py
+      hash: md5
+      md5: e0b349af90c510ae046bb25f76b363ac
+      size: 3576
+      isexec: true
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: 5e9c29d58baed6a0102150ababbe7e8c
+      size: 3779
+  evaluate:
+    cmd: python scripts/evaluate.py --model models/model.pkl --data 
+      data/processed/loans_clean.csv --output metrics/metrics.json --params 
+      params.yaml
+    deps:
+    - path: data/processed/loans_clean.csv
+      hash: md5
+      md5: 0b59f33c4d34dce1f7a0bc058301e585
+      size: 974
+    - path: models/model.pkl
+      hash: md5
+      md5: 5e9c29d58baed6a0102150ababbe7e8c
+      size: 3779
+    - path: params.yaml
+      hash: md5
+      md5: 898d9298e46dc571960559b879e29629
+      size: 398
+      isexec: true
+    - path: scripts/evaluate.py
+      hash: md5
+      md5: ed262af9e2715f033e019c41697d3ede
+      size: 3818
+      isexec: true
+    outs:
+    - path: metrics/metrics.json
+      hash: md5
+      md5: d557ea68b16cb1791f04a582ed2f258b
+      size: 83

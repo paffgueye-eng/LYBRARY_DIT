@@ -23,7 +23,6 @@ def load_raw_csv(input_path: Path) -> pd.DataFrame:
     df = pd.read_csv(
         input_path,
         parse_dates=["borrowed_at", "due_date", "returned_at", "created_at"],
-        infer_datetime_format=True,
         low_memory=False,
     )
     return df

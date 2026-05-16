@@ -61,22 +61,43 @@ cd "c:\Users\HP\Desktop\Lybrary_DIT"
 python -m pip install -r requirements-dvc.txt
 ```
 
-2. Initialiser DVC dans le dépôt :
+2. Supprimer toute configuration DVC antérieure :
+
+```powershell
+Remove-Item -Recurse -Force .dvc, .dvcignore, dvc.yaml, dvc.lock, .dvc/cache
+```
+
+3. Initialiser DVC dans le dépôt :
 
 ```powershell
 dvc init
 ```
 
-3. Créer un remote Google Drive :
+4. Ajouter le pipeline propre :
+
+```powershell
+dvc repro
+```
+
+5. Configurer le remote Google Drive avec service account :
 
 ```powershell
 dvc remote add -d gdrive gdrive://<FOLDER_ID>
+dvc remote modify gdrive gdrive_use_service_account true
+dvc remote modify gdrive gdrive_service_account_json_file_path /path/to/service-account.json
 ```
 
-4. Protéger la configuration locale :
+6. Vérifier le remote :
 
 ```powershell
-echo ".dvc/config.local" >> .gitignore
+dvc remote list
+```
+
+7. Protéger la configuration locale et les accès :
+
+```powershell
+Add-Content .gitignore ".dvc/config.local"
+Add-Content .gitignore ".dvc/credentials.json"
 ```
 
 ### Utilisation DVC

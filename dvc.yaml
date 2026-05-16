@@ -1,37 +1,36 @@
 stages:
-  export_loans:
+  export:
     cmd: python scripts/export_loans.py --output data/raw/loans.csv
     deps:
       - scripts/export_loans.py
+      - params.yaml
     outs:
       - data/raw/loans.csv
 
   preprocess:
-    cmd: python scripts/preprocess.py --input data/raw/loans.csv --output data/processed/loans_clean.csv
+    cmd: python scripts/preprocess.py --input data/raw/loans.csv --output data/processed/loans_clean.csv --params params.yaml
     deps:
       - scripts/preprocess.py
-      - data/raw/loans.csv
       - params.yaml
+      - data/raw/loans.csv
     outs:
       - data/processed/loans_clean.csv
 
   train:
-    cmd: python scripts/train.py --input data/processed/loans_clean.csv --output models/model.pkl
+    cmd: python scripts/train.py --input data/processed/loans_clean.csv --output models/model.pkl --params params.yaml
     deps:
       - scripts/train.py
-      - data/processed/loans_clean.csv
       - params.yaml
+      - data/processed/loans_clean.csv
     outs:
       - models/model.pkl
 
   evaluate:
-    cmd: python scripts/evaluate.py --model models/model.pkl --data data/processed/loans_clean.csv --output metrics/metrics.json
+    cmd: python scripts/evaluate.py --model models/model.pkl --data data/processed/loans_clean.csv --output metrics/metrics.json --params params.yaml
     deps:
       - scripts/evaluate.py
-      - models/model.pkl
-      - data/processed/loans_clean.csv
       - params.yaml
-    outs:
-      - metrics/metrics.json
+      - data/processed/loans_clean.csv
+      - models/model.pkl
     metrics:
       - metrics/metrics.json

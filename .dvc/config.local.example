@@ -1,0 +1,4 @@
+[remote "gdrive"]
+    url = gdrive://<FOLDER_ID>
+    gdrive_use_service_account = true
+    gdrive_service_account_json_file_path = C:\path\to\service-account.json

@@ -60,9 +60,13 @@ logs/
 results/
 
 # DVC
-.dvc/
 *.dvc
+!.dvc
 .dvcignore
+.dvc/config.local
+.dvc/*.json
+.dvc/cache/
+.dvc/tmp/
 
 # VS Code
 .vscode/
@@ -125,5 +129,5 @@ node_modules/
 staticfiles/
 metrics/
 
-# Optional: keep DVC remote config local
-.dvc/config.local
+# DVC service account
+.dvc/credentials.json

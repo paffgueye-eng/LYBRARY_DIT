@@ -26,6 +26,8 @@ def load_database_url(explicit: str | None) -> str:
         raise ValueError(
             "DATABASE_URL n'est pas défini. Ajoute DATABASE_URL dans .env ou utilise --database-url."
         )
+    if env_url.startswith("postgres://"):
+        env_url = env_url.replace("postgres://", "postgresql://", 1)
     return env_url
 
 

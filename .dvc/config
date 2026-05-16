@@ -1,0 +1,6 @@
+[core]
+    remote = lybrary
+['remote "lybrary"']
+    url = gdrive://1AOJrSt1l-oqzjcPXuLSwDU4Eq2Nh9Cfn
+    gdrive_use_service_account = true
+    gdrive_service_account_json_file_path = C:\Users\HP\Downloads\dvc-gdrive-496513-db5d9dd90545.json
