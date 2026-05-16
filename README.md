@@ -1,4 +1,4 @@
-# Lybrary_DIT — README complet
+# Lybrary_DIT — README 
 
 Projet de plateforme de bibliothèque numérique pour le Dakar Institute of Technology (DIT).
 Ce dépôt contient un backend Django, des microservices ML (FastAPI), une orchestration Docker Compose,
@@ -40,7 +40,7 @@ Prérequis
 - Git
 - Docker Desktop (Windows) ou Docker Engine (Linux/macOS)
 - Docker Compose (v2+) — `docker compose` CLI
-- Python 3.12 (pour exécuter localement hors conteneur)
+- Python 3.10 (pour exécuter localement hors conteneur)
 - DVC (optionnel, pour pipeline data)
 
 Variables d'environnement & Secrets
@@ -161,7 +161,7 @@ Contribution
 1. Fork → branche feature → PR with description and tests.
 2. Respecte les conventions de commit et ajoute des tests pour tout nouveau comportement.
 
-Push vers remote (exemples)
+Push vers remote 
 --------------------------
 Après avoir vérifié localement, pousse tes changements :
 
@@ -170,16 +170,3 @@ git add .
 git commit -m "feat(ci): add GitHub Actions CI + DVC + publish jobs; add README"
 git push origin main
 ```
-
-Si tu veux que je pousse directement depuis cet environnement, je peux préparer la commande mais je ne peux pas pousser sans tes identifiants Git/remote configurés ici.
-
-Licence
--------
-Choisis une licence si nécessaire (MIT/Apache-2.0). Actuellement aucun fichier `LICENSE` n'est inclus.
-
----
-Si tu veux, je peux :
-- ajouter `flake8`/`mypy` et un job d'analyse statique au CI,
-- ajouter un job CI pour exécuter `dvc push` sécurisé,
-- ou préparer un job Docker Hub si tu préfères Docker Hub plutôt que GHCR.
-
