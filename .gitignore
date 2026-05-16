@@ -123,6 +123,7 @@ node_modules/
 
 # Ignore generated static files if built separately
 staticfiles/
+metrics/
 
 # Optional: keep DVC remote config local
 .dvc/config.local

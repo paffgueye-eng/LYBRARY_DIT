@@ -1,0 +1,37 @@
+stages:
+  export_loans:
+    cmd: python scripts/export_loans.py --output data/raw/loans.csv
+    deps:
+      - scripts/export_loans.py
+    outs:
+      - data/raw/loans.csv
+
+  preprocess:
+    cmd: python scripts/preprocess.py --input data/raw/loans.csv --output data/processed/loans_clean.csv
+    deps:
+      - scripts/preprocess.py
+      - data/raw/loans.csv
+      - params.yaml
+    outs:
+      - data/processed/loans_clean.csv
+
+  train:
+    cmd: python scripts/train.py --input data/processed/loans_clean.csv --output models/model.pkl
+    deps:
+      - scripts/train.py
+      - data/processed/loans_clean.csv
+      - params.yaml
+    outs:
+      - models/model.pkl
+
+  evaluate:
+    cmd: python scripts/evaluate.py --model models/model.pkl --data data/processed/loans_clean.csv --output metrics/metrics.json
+    deps:
+      - scripts/evaluate.py
+      - models/model.pkl
+      - data/processed/loans_clean.csv
+      - params.yaml
+    outs:
+      - metrics/metrics.json
+    metrics:
+      - metrics/metrics.json

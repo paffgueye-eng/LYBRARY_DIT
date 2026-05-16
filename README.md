@@ -43,9 +43,94 @@ docker compose down
 
 ## Préparation pour DVC
 
-- Ignorer `data/`, `artifacts/`, `models/`, `logs/`.
-- Ajouter `.dvcignore` et `.dvc/` après l’installation de DVC.
-- Versionner les pipelines mais pas les fichiers binaires lourds.
+Ce projet est prêt pour DVC avec :
+
+- un pipeline de production `dvc.yaml`
+- des scripts structurés dans `scripts/`
+- des données brutes dans `data/raw/`
+- des données prétraitées dans `data/processed/`
+- un modèle versionné dans `models/model.pkl`
+- des métriques sorties dans `metrics/metrics.json`
+
+### Installation DVC
+
+1. Activer ton environnement Python :
+
+```powershell
+cd "c:\Users\HP\Desktop\Lybrary_DIT"
+python -m pip install -r requirements-dvc.txt
+```
+
+2. Initialiser DVC dans le dépôt :
+
+```powershell
+dvc init
+```
+
+3. Créer un remote Google Drive :
+
+```powershell
+dvc remote add -d gdrive gdrive://<FOLDER_ID>
+```
+
+4. Protéger la configuration locale :
+
+```powershell
+echo ".dvc/config.local" >> .gitignore
+```
+
+### Utilisation DVC
+
+Pour générer le pipeline complet :
+
+```powershell
+dvc repro
+```
+
+Pour envoyer les artefacts sur Google Drive :
+
+```powershell
+dvc push
+```
+
+Pour récupérer une version distante :
+
+```powershell
+dvc pull
+```
+
+### DVC dans Docker
+
+- Tu peux installer DVC sur l'hôte ou dans le container ML.
+- Si tu veux exécuter DVC depuis le container ML, ajoute `dvc[gdrive]` et `PyYAML` dans le Dockerfile ML ou dans un fichier de dépendances partagé.
+- Exemple de modification Dockerfile ML :
+
+```dockerfile
+RUN pip install --no-cache-dir -r /tmp/requirements.txt \
+    && pip install --no-cache-dir -r /tmp/requirements-dvc.txt \
+    && rm /tmp/requirements.txt /tmp/requirements-dvc.txt
+```
+
+- Dans `docker-compose.yml`, assure-toi que le volume du projet est monté et que le container peut écrire dans `data/`, `models/`, `metrics/`.
+
+- Tu peux exécuter le pipeline dans Docker avec :
+
+```powershell
+docker compose run --rm ml-service python scripts/export_loans.py
+```
+
+- Pour utiliser DVC dans le même container :
+
+```powershell
+docker compose run --rm ml-service dvc repro
+```
+
+### Bonnes pratiques avant DVC
+
+- versionner le code, pas les données lourdes
+- garder `.env` hors du dépôt
+- utiliser `params.yaml` pour les hyperparamètres
+- utiliser `dvc.lock` pour figer les versions du pipeline
 
 ## À ne pas versionner
 
