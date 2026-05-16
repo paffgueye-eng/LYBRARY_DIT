@@ -1,6 +1,3 @@
-# Lybrary_DIT
-
-Modern digital library platform for DIT featuring Django REST API, PostgreSQL, Dockerized microservices, and AI-powered book recommendation system.
 
 ## Description
 
@@ -35,22 +32,4 @@ docker compose logs -f ml_service
 docker compose down
 ```
 
-## Bonnes pratiques Git
 
-- Utiliser `main` comme branche principale.
-- Faire des commits atomiques.
-- Ne jamais versionner les secrets (`.env`, clés, mots de passe).
-
-## Préparation pour DVC
-
-- Ignorer `data/`, `artifacts/`, `models/`, `logs/`.
-- Ajouter `.dvcignore` et `.dvc/` après l’installation de DVC.
-- Versionner les pipelines mais pas les fichiers binaires lourds.
-
-## À ne pas versionner
-
-- secrets / fichiers `.env`
-- virtualenv local (`env/`)
-- bases de données locales (`db.sqlite3`)
-- datasets / modèles lourds
-- fichiers de build Docker temporaires
